@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+videos_hsf/
+imagenes_hsf/
+imagenes_stock_hsf/
+logs_hsf/
+textos_listos_gdrive/
+gameplay_local_gdrive/
