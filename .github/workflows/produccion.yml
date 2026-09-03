@@ -1,4 +1,40 @@
-- name: Generar videos en lote (texto de Drive + gameplay) + subir a Drive
+name: Produccion HSF (video real automatico, 2x al dia)
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # 5:00 AM y 19:00 (7pm) hora Peru (UTC-5) = 10:00 y 00:00 UTC
+    - cron: "0 10 * * *"
+    - cron: "0 0 * * *"
+
+jobs:
+  produccion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Descargar el repo
+        uses: actions/checkout@v4
+
+      - name: Instalar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Instalar rclone
+        run: curl https://rclone.org/install.sh | sudo bash
+
+      - name: Configurar rclone (credenciales de Drive)
+        run: |
+          mkdir -p ~/.config/rclone
+          echo "${{ secrets.RCLONE_CONFIG_BASE64 }}" | base64 -d > ~/.config/rclone/rclone.conf
+
+      - name: Instalar dependencias de Python
+        run: pip install -r requirements.txt
+
+      - name: Generar videos en lote (texto de Drive + gameplay) + subir a Drive
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
